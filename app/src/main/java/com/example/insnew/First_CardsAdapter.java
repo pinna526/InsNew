@@ -1,34 +1,41 @@
 package com.example.insnew;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.List;
+
 
 public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.ViewHolder> {
     private List<String> mylist;
-    public First_CardsAdapter(List<String> list){
+    private Context mycontext;
+
+    private static final String TAG = "First_CardsAdapter";
+
+    public First_CardsAdapter(Context context,List<String> list){
         mylist = list;
+        mycontext = context;
+
     }
 
-
-    @NonNull
     @Override
-    public First_CardsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.first_cards_item, parent, false);
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+//        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+//        View view = inflater.inflate(R.layout.first_cards_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.first_cards_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull First_CardsAdapter.ViewHolder holder, int position) {
-
+    public void onBindViewHolder( ViewHolder holder, int position) {
+        //根据列表设置不同的显示
+        holder.textView.setText(mylist.get(position));
+//        Log.i(TAG, "onBindViewHolder: "+holder);
     }
 
     @Override
@@ -46,8 +53,8 @@ public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.
 
         public ViewHolder(View itemVieww) {
             super(itemVieww);
-            textView = itemView.findViewById(R.id.textView);
-            button = itemVieww.findViewById(R.id.button);
+            textView = (TextView) itemView.findViewById(R.id.textView);
+            button = (Button) itemView.findViewById(R.id.button);
         }
     }
 

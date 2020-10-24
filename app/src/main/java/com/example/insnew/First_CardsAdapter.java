@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
@@ -34,7 +35,7 @@ public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.
     @Override
     public void onBindViewHolder( ViewHolder holder, int position) {
         //根据列表设置不同的显示
-        holder.textView.setText(mylist.get(position));
+        holder.news_title.setText(mylist.get(position));
 //        Log.i(TAG, "onBindViewHolder: "+holder);
     }
 
@@ -48,13 +49,16 @@ public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textView;
-        public Button button;
+        public TextView news_title,news_src;
+        public ImageView news_photo,news_logo;
 
         public ViewHolder(View itemVieww) {
             super(itemVieww);
-            textView = (TextView) itemView.findViewById(R.id.textView);
-            button = (Button) itemView.findViewById(R.id.button);
+            news_title = (TextView)itemView.findViewById(R.id.news_title);
+            news_src = (TextView)itemView.findViewById(R.id.news_title);
+            news_photo = (ImageView)itemView.findViewById(R.id.news_photo);
+            news_logo = (ImageView)itemView.findViewById(R.id.news_logo);
+
         }
     }
 

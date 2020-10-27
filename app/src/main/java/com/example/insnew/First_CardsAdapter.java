@@ -15,6 +15,7 @@ import java.util.List;
 public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.ViewHolder> {
     private List<String> mylist;
     private Context mycontext;
+    private OnItemClickLitener   mOnItemClickLitener;
 
     private static final String TAG = "First_CardsAdapter";
 
@@ -32,10 +33,20 @@ public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.
         return new ViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder( ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         //根据列表设置不同的显示
         holder.news_title.setText(mylist.get(position));
+
+        //通过为条目设置点击事件触发回调
+        if (mOnItemClickLitener != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mOnItemClickLitener.onItemClick(view, position);
+                }
+            });
+
+    }
 //        Log.i(TAG, "onBindViewHolder: "+holder);
     }
 
@@ -59,8 +70,17 @@ public class First_CardsAdapter extends RecyclerView.Adapter<First_CardsAdapter.
             news_photo = (ImageView)itemView.findViewById(R.id.news_photo);
             news_logo = (ImageView)itemView.findViewById(R.id.news_logo);
 
+
         }
     }
 
+    //为点击事件设置回调接口
+    public interface OnItemClickLitener{
+        void onItemClick(View view, int position);
+    }
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener){
+        this.mOnItemClickLitener = mOnItemClickLitener;
+    }
 
 }

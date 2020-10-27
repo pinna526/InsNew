@@ -77,11 +77,12 @@
     </HorizontalScrollView>
 
 <!--    卡片组件-->
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/cards_fragment"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:orientation="horizontal">
-    </LinearLayout>
+        android:layout_height="match_parent">
+    </FrameLayout>
+
+
 
 </LinearLayout>

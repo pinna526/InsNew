@@ -22,10 +22,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+//          默认加载fragment
+        AddFragment();
 //        配置顶部导航栏
         TopbarController();
 
+    }
+
+    private void AddFragment() {
+        //向卡片传值
+        First_Fragment first_fragment = new First_Fragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Bundle bundle = new Bundle();
+        bundle.putString("title", title[0]);
+        first_fragment.setArguments(bundle);
+        //用管理器管理该fragment
+        fragmentManager.beginTransaction()
+                .add(R.id.cards_fragment,first_fragment)
+                .commit();
+//        getSupportFragmentManager().beginTransaction().show(first_fragment).commit();
     }
 
     /*
@@ -62,8 +77,15 @@ public class MainActivity extends AppCompatActivity {
                         //用管理器管理该fragment
                         fragmentManager.beginTransaction()
                                 .replace(R.id.cards_fragment, first_fragment)
-                                .addToBackStack(null).
-                                commit();
+                                .addToBackStack(null)
+                                .show(first_fragment)
+                                .commit();
+//                        fragmentManager.beginTransaction()
+//                                .add(R.id.cards_fragment,First_Fragment.newInstance(title_select))
+//                                .commit();
+//                        fragmentManager.beginTransaction()
+//                                .add(R.id.cards_fragment,first_fragment)
+//                                .commit();
 
                     } else {
                         //未被选中

@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +25,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,6 +33,7 @@ import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,17 +49,17 @@ public class First_Fragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    public static First_Fragment newInstance(String str){
+    public static First_Fragment newInstance(String str) {
         First_Fragment ff = new First_Fragment();
         Bundle bdl = new Bundle();
-        bdl.putString("title",str);
+        bdl.putString("title", str);
         ff.setArguments(bdl);
         return ff;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
-        View view=inflater.inflate(R.layout.first_fragment,container,false);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.first_fragment, container, false);
 //        Log.i(TAG, "onCreateView: 该fragment已被唤醒");
         //获取从activity传来的title值
         if (getArguments() != null) {
@@ -82,7 +87,7 @@ public class First_Fragment extends Fragment {
 //        //设置为true保证每个card尺寸固定，不需要根据内容重新计算
 //        recyclerView.setHasFixedSize(true);
         //设置card滚动的布局和方向
-        recyclerView = (RecyclerView)view.findViewById(R.id.first_cards);
+        recyclerView = (RecyclerView) view.findViewById(R.id.first_cards);
         //设置圆角
 //        recyclerView.setOutlineProvider(new ViewOutlineProvider(){
 //            @Override
@@ -166,6 +171,12 @@ public class First_Fragment extends Fragment {
                         /**循环list对象**/
                         for (int i = 0; i < jarr.length(); i++) {
                             data.add(jarr.getJSONObject(i));
+                            String pic_url = jarr.getJSONObject(i).getString("pic");
+                            //为了避免麻烦，在这里直接将url转换为bitmap替换进json
+                            Bitmap pic_bm = getBitmap(jarr.getJSONObject(i).getString("pic"));
+                            String pic_str = bitmapToString(pic_bm);
+                            jarr.getJSONObject(i).put("pic", pic_str);
+//                            Log.i(TAG, "doInBackground: " + jarr.getJSONObject(i).getString("pic"));
                         }
                     }
 
@@ -185,20 +196,20 @@ public class First_Fragment extends Fragment {
         protected void onPostExecute(List<JSONObject> jsonObjects) {
             super.onPostExecute(jsonObjects);
             Log.i(TAG, "onPostExecute: 开始了");
-            First_CardsAdapter first_cardsAdapter = new First_CardsAdapter(getActivity(),jsonObjects);
+            First_CardsAdapter first_cardsAdapter = new First_CardsAdapter(getActivity(), jsonObjects);
             recyclerView.setAdapter(first_cardsAdapter);
 
             first_cardsAdapter.notifyDataSetChanged();
             recyclerView.setLayoutManager(new LinearLayoutManager(
-                    getActivity(),LinearLayoutManager.HORIZONTAL,false));
+                    getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
             //添加点击事件【打开一个新的activity展示新闻详情页面】
             first_cardsAdapter.setOnItemClickLitener(new First_CardsAdapter.OnItemClickLitener() {
                 @Override
                 public void onItemClick(View view, int position) {
                     //打开一个新的Activity
-                    Intent next = new Intent(getActivity(),SecondActivity.class);
-                    next.putExtra("news_data_title",title);  //将文章标题传递给下一个页面
+                    Intent next = new Intent(getActivity(), SecondActivity.class);
+                    next.putExtra("news_data_title", title);  //将文章标题传递给下一个页面
                     startActivity(next);
                 }
             });
@@ -237,6 +248,53 @@ public class First_Fragment extends Fragment {
                 return null;
             }
         }
+
+        /**
+         * 获取网落图片资源
+         *
+         * @param url
+         * @return 参考：https://www.open-open.com/lib/view/open1329994245811.html
+         */
+        public Bitmap getBitmap(final String url) {
+            Bitmap bm = null;
+            try {
+                URL iconUrl = new URL(url);
+                URLConnection conn = iconUrl.openConnection();
+                HttpURLConnection http = (HttpURLConnection) conn;
+
+                int length = http.getContentLength();
+
+                conn.connect();
+                // 获得图像的字符流
+                InputStream is = conn.getInputStream();
+                BufferedInputStream bis = new BufferedInputStream(is, length);
+                bm = BitmapFactory.decodeStream(bis);
+                bis.close();
+                is.close();// 关闭流
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return bm;
+        }
+
+
+        /**
+         * bitmap格式转换为string
+         * @param bitmap
+         * @return
+         * 参考：https://blog.csdn.net/xiaoxiangyuhai/article/details/77863063
+         */
+        public String bitmapToString(Bitmap bitmap){
+            //将Bitmap转换成字符串
+            String string=null;
+            ByteArrayOutputStream bStream=new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG,100,bStream);
+            byte[]bytes=bStream.toByteArray();
+            string= Base64.encodeToString(bytes,Base64.DEFAULT);
+            return string;
+        }
+
     }
 
 }

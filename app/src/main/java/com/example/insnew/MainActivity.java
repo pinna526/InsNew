@@ -9,6 +9,12 @@ import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 
@@ -16,29 +22,34 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     RecyclerView recyclerView;
-    private String[] title = {"为你推荐", "国际", "时政", "财经", "热点"};
+    private String[] title = {"头条", "新闻", "财经", "科技"};
 
     RadioGroup radioGroup;
+    RadioButton radioButton1,radioButton2,radioButton3,radioButton4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initRadioButton();
         //默认加载fragment
         AddFragment();
         //配置顶部导航栏
         TopbarController();
+    }
 
-        MyAsyncTask myAsyncTask = new MyAsyncTask();
-        try {
-            String a = myAsyncTask.execute("头条").get();
-            Log.i(TAG, "onCreate: "+a);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    private void initRadioButton() {
+        radioButton1 = (RadioButton)findViewById(R.id.button1);
+        radioButton2 = (RadioButton)findViewById(R.id.button2);
+        radioButton3 = (RadioButton)findViewById(R.id.button3);
+        radioButton4 = (RadioButton)findViewById(R.id.button4);
+
+        radioButton1.setText(title[0]);
+        radioButton2.setText(title[1]);
+        radioButton3.setText(title[2]);
+        radioButton4.setText(title[3]);
+
     }
 
     /*

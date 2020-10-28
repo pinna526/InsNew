@@ -3,6 +3,8 @@ package com.example.insnew;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,14 +22,14 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class MyAsyncTask extends AsyncTask<String, Void, String> {
+public class MyAsyncTask extends AsyncTask<String, Void, List<JSONObject>> {
     private static final String TAG = "MyAsyncTask";
     JSONObject postData;
     String title;
     List<JSONObject> data;
 
     @Override
-    protected String doInBackground(String[] strings) {
+    protected List<JSONObject> doInBackground(String[] strings) {
         try {
             Log.i(TAG, "doInBackground: 开始执行啦");
             //根据网站规则对url进行处理
@@ -81,8 +83,7 @@ public class MyAsyncTask extends AsyncTask<String, Void, String> {
         } catch (Exception e) {
             Log.d(TAG, e.getLocalizedMessage());
         }
-        return data.toString();
-
+        return data;
     }
 
     private String convertInputStreamToString(InputStream inputStream) throws IOException {

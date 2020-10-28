@@ -9,6 +9,8 @@ import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import java.util.concurrent.ExecutionException;
+
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -22,13 +24,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//          默认加载fragment
+
+        //默认加载fragment
         AddFragment();
-//        配置顶部导航栏
+        //配置顶部导航栏
         TopbarController();
 
+        MyAsyncTask myAsyncTask = new MyAsyncTask();
+        try {
+            String a = myAsyncTask.execute("头条").get();
+            Log.i(TAG, "onCreate: "+a);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
+    /*
+    默认加载第一个fragment
+     */
     private void AddFragment() {
         //向卡片传值
         First_Fragment first_fragment = new First_Fragment();
@@ -49,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private void TopbarController() {
         radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
-
         //默认选中第一个
         RadioButton rb = (RadioButton)radioGroup.getChildAt(0);
         rb.setSelected(true);

@@ -12,16 +12,15 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -120,7 +119,7 @@ public class First_Fragment extends Fragment {
     }
 
 
-    //新建内部类
+    //异步请求网络资源
     public class MyAsyncTask extends AsyncTask<String, Void, List<JSONObject>> {
         private static final String TAG = "MyAsyncTask";
         JSONObject postData;
@@ -160,22 +159,24 @@ public class First_Fragment extends Fragment {
                     InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
                     String response = convertInputStreamToString(inputStream);
                     Log.i(TAG, "doInBackground: " + response);
-                    JSONObject jsonObj = new JSONObject(response);
+                    JSONObject jsonObj = JSONObject.parseObject(response);
                     String result = jsonObj.getString("result");
-                    JSONObject jData = new JSONObject(result);
+                    JSONObject jData = JSONObject.parseObject(result);
 
                     data = new ArrayList<>();
                     if (jData.get("list") != null) {
                         /**把list转换成jsonArray对象**/
                         JSONArray jarr = jData.getJSONArray("list");
                         /**循环list对象**/
-                        for (int i = 0; i < jarr.length(); i++) {
+                        for (int i = 0; i < jarr.size(); i++) {
                             data.add(jarr.getJSONObject(i));
-                            String pic_url = jarr.getJSONObject(i).getString("pic");
+
                             //为了避免麻烦，在这里直接将url转换为bitmap替换进json
-                            Bitmap pic_bm = getBitmap(jarr.getJSONObject(i).getString("pic"));
-                            String pic_str = bitmapToString(pic_bm);
-                            jarr.getJSONObject(i).put("pic", pic_str);
+                            //×由于占用整个显示加载的时间，所以弃用，转为在Adapter里操作
+//                            String pic_url = jarr.getJSONObject(i).getString("pic");
+//                            Bitmap pic_bm = getBitmap(jarr.getJSONObject(i).getString("pic"));
+//                            String pic_str = bitmapToString(pic_bm);
+//                            jarr.getJSONObject(i).put("pic", pic_str);
 //                            Log.i(TAG, "doInBackground: " + jarr.getJSONObject(i).getString("pic"));
                         }
                     }
@@ -193,7 +194,7 @@ public class First_Fragment extends Fragment {
 
         //线程结束后回主线程
         @Override
-        protected void onPostExecute(List<JSONObject> jsonObjects) {
+        protected void onPostExecute(final List<JSONObject> jsonObjects) {
             super.onPostExecute(jsonObjects);
             Log.i(TAG, "onPostExecute: 开始了");
             First_CardsAdapter first_cardsAdapter = new First_CardsAdapter(getActivity(), jsonObjects);
@@ -209,7 +210,10 @@ public class First_Fragment extends Fragment {
                 public void onItemClick(View view, int position) {
                     //打开一个新的Activity
                     Intent next = new Intent(getActivity(), SecondActivity.class);
-                    next.putExtra("news_data_title", title);  //将文章标题传递给下一个页面
+                    next.putExtra("news_data_title", jsonObjects.get(position).toJSONString());  //将文章传递给下一个页面
+//                    Log.i(TAG, "onItemClick: "+jsonObjects.get(position));
+//                    Log.i(TAG, "onItemClick: "+jsonObjects.get(position).toJSONString());
+
                     startActivity(next);
                 }
             });

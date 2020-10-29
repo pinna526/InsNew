@@ -3,22 +3,41 @@ package com.example.insnew;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSONObject;
+import com.bumptech.glide.Glide;
+
+
 public class SecondActivity extends AppCompatActivity {
-    TextView news_title;
+    private static final String TAG = "SecondActivity";
+    TextView news_title,news_content,news_src;
     ImageButton back_button;
+    ImageView news_photo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
-        String news_data_title = getIntent().getStringExtra("news_data_title");
+        String news_data = getIntent().getStringExtra("news_data_title");
+        JSONObject mydata = JSONObject.parseObject(news_data);
+//        Log.i(TAG, "SeconCreate: "+mydata);
+
         news_title = (TextView)findViewById(R.id.news_title);
-        news_title.setText(news_data_title);
+        news_content = (TextView)findViewById(R.id.news_content);
+        news_src = (TextView)findViewById(R.id.news_src);
+        news_photo = (ImageView)findViewById(R.id.news_photo);
+
+        news_title.setText(mydata.getString("title"));
+        news_content.setText(mydata.getString("content"));
+        news_src.setText(mydata.getString("src"));
+        Glide.with(SecondActivity.this).load(mydata.getString("pic")).into(news_photo);
+
         //返回上一Activity
         backToPre();
     }

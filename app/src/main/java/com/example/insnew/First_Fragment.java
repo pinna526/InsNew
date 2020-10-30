@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -14,10 +15,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Base64;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -52,6 +56,7 @@ public class First_Fragment extends Fragment {
     ImageView news_photo_show;
     FrameLayout show_frame;
     String title;
+    LinearLayoutManager manager;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +82,8 @@ public class First_Fragment extends Fragment {
         news_title_show = (TextView) view.findViewById(R.id.news_title_show);
         news_photo_show = (ImageView) view.findViewById(R.id.news_photo_show);
         show_frame = (FrameLayout) view.findViewById(R.id.show_frame);
+
+        manager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
 //        Log.i(TAG, "onCreateView: "+title);
 
         //初始化卡片填充内容[测试]
@@ -95,7 +102,30 @@ public class First_Fragment extends Fragment {
             e.printStackTrace();
         }
 
+        //添加上滑隐藏动作
+        //参考：https://www.jianshu.com/p/f384032572d6
+        recyclerView.addOnScrollListener(new HidingScrollListener() {
 
+            @Override
+            public void onHide() {
+                Resources resources = getActivity().getResources();
+                DisplayMetrics dm = resources.getDisplayMetrics();
+                float density = dm.density;
+                int width = dm.widthPixels;
+                int height = dm.heightPixels;
+                show_frame.animate()
+                        .translationY(-height)
+                        .setDuration(800)
+                        .setInterpolator(new AccelerateInterpolator(2))
+                        .start();
+
+            }
+
+            @Override
+            public void onShow() {
+                show_frame.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).setDuration(800).start();
+            }
+        });
 
 
 //        //设置为true保证每个card尺寸固定，不需要根据内容重新计算
@@ -222,8 +252,7 @@ public class First_Fragment extends Fragment {
             recyclerView.setAdapter(first_cardsAdapter);
 
             first_cardsAdapter.notifyDataSetChanged();
-            recyclerView.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.VERTICAL, false));
+            recyclerView.setLayoutManager(manager);
 
             //添加点击事件【打开一个新的activity展示新闻详情页面】
             first_cardsAdapter.setOnItemClickLitener(new First_CardsAdapter.OnItemClickLitener() {
@@ -326,6 +355,42 @@ public class First_Fragment extends Fragment {
             return string;
         }
 
+    }
+
+    /**
+     * 内部抽象类，继承了recycler的滚动事件，将在上面被重写
+     */
+    public abstract class HidingScrollListener extends RecyclerView.OnScrollListener {
+        private static final int HIDE_THRESHOLD = 20;
+        private int scrolledDistance = 0;
+        private boolean controlsVisible = true;
+
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            if (scrolledDistance > HIDE_THRESHOLD && controlsVisible) {
+                Log.i(TAG, "onScrolled: "+manager.findFirstCompletelyVisibleItemPosition());
+                onHide();
+                controlsVisible = false;
+                scrolledDistance = 0;
+            } else if (scrolledDistance < -HIDE_THRESHOLD && !controlsVisible) {
+                int position = manager.findFirstCompletelyVisibleItemPosition();
+                if(position<2){
+                    onShow();
+                    controlsVisible = true;
+                    scrolledDistance = 0;
+                }
+            }
+            if ((controlsVisible && dy > 0) || (!controlsVisible && dy < 0)) {
+                scrolledDistance += dy;
+            }
+
+        }
+
+        public abstract void onHide();
+
+        public abstract void onShow();
     }
 
 

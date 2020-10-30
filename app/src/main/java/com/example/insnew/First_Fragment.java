@@ -18,9 +18,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.bumptech.glide.Glide;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -42,6 +48,9 @@ import java.util.concurrent.ExecutionException;
 public class First_Fragment extends Fragment {
     private static final String TAG = "First_Fragment";
     RecyclerView recyclerView;
+    TextView news_title_show;
+    ImageView news_photo_show;
+    FrameLayout show_frame;
     String title;
 
     public void onCreate(Bundle savedInstanceState) {
@@ -64,6 +73,10 @@ public class First_Fragment extends Fragment {
         if (getArguments() != null) {
             title = getArguments().getString("title");
         }
+        recyclerView = (RecyclerView) view.findViewById(R.id.first_cards);
+        news_title_show = (TextView) view.findViewById(R.id.news_title_show);
+        news_photo_show = (ImageView) view.findViewById(R.id.news_photo_show);
+        show_frame = (FrameLayout) view.findViewById(R.id.show_frame);
 //        Log.i(TAG, "onCreateView: "+title);
 
         //初始化卡片填充内容[测试]
@@ -83,10 +96,11 @@ public class First_Fragment extends Fragment {
         }
 
 
+
+
 //        //设置为true保证每个card尺寸固定，不需要根据内容重新计算
 //        recyclerView.setHasFixedSize(true);
         //设置card滚动的布局和方向
-        recyclerView = (RecyclerView) view.findViewById(R.id.first_cards);
         //设置圆角
 //        recyclerView.setOutlineProvider(new ViewOutlineProvider(){
 //            @Override
@@ -197,12 +211,19 @@ public class First_Fragment extends Fragment {
         protected void onPostExecute(final List<JSONObject> jsonObjects) {
             super.onPostExecute(jsonObjects);
             Log.i(TAG, "onPostExecute: 开始了");
+            //提取出第一个元素放在展示位
+            final JSONObject json_show = jsonObjects.get(0);
+            jsonObjects.remove(0);
+            news_title_show.setText(json_show.getString("title"));
+            Glide.with(getActivity()).load(json_show.getString("pic")).into(news_photo_show);
+
+            //为卡片填充数据
             First_CardsAdapter first_cardsAdapter = new First_CardsAdapter(getActivity(), jsonObjects);
             recyclerView.setAdapter(first_cardsAdapter);
 
             first_cardsAdapter.notifyDataSetChanged();
             recyclerView.setLayoutManager(new LinearLayoutManager(
-                    getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                    getActivity(), LinearLayoutManager.VERTICAL, false));
 
             //添加点击事件【打开一个新的activity展示新闻详情页面】
             first_cardsAdapter.setOnItemClickLitener(new First_CardsAdapter.OnItemClickLitener() {
@@ -211,12 +232,18 @@ public class First_Fragment extends Fragment {
                     //打开一个新的Activity
                     Intent next = new Intent(getActivity(), SecondActivity.class);
                     next.putExtra("news_data_title", jsonObjects.get(position).toJSONString());  //将文章传递给下一个页面
-//                    Log.i(TAG, "onItemClick: "+jsonObjects.get(position));
-//                    Log.i(TAG, "onItemClick: "+jsonObjects.get(position).toJSONString());
-
                     startActivity(next);
                 }
             });
+            show_frame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent next = new Intent(getActivity(), SecondActivity.class);
+                    next.putExtra("news_data_title", json_show.toJSONString());  //将文章传递给下一个页面
+                    startActivity(next);
+                }
+            });
+
 
         }
 
@@ -285,20 +312,21 @@ public class First_Fragment extends Fragment {
 
         /**
          * bitmap格式转换为string
+         *
          * @param bitmap
-         * @return
-         * 参考：https://blog.csdn.net/xiaoxiangyuhai/article/details/77863063
+         * @return 参考：https://blog.csdn.net/xiaoxiangyuhai/article/details/77863063
          */
-        public String bitmapToString(Bitmap bitmap){
+        public String bitmapToString(Bitmap bitmap) {
             //将Bitmap转换成字符串
-            String string=null;
-            ByteArrayOutputStream bStream=new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG,100,bStream);
-            byte[]bytes=bStream.toByteArray();
-            string= Base64.encodeToString(bytes,Base64.DEFAULT);
+            String string = null;
+            ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+            byte[] bytes = bStream.toByteArray();
+            string = Base64.encodeToString(bytes, Base64.DEFAULT);
             return string;
         }
 
     }
+
 
 }

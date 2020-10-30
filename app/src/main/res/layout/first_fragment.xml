@@ -4,13 +4,43 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".First_Fragment">
 
-        <!--循环卡片-->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/first_cards"
+    <FrameLayout
+        android:id="@+id/show_frame"
+        android:layout_width="match_parent"
+        android:layout_height="250dp">
+
+        <ImageView
+            android:id="@+id/news_photo_show"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp" />
+            android:scaleType="fitXY" />
+
+        <ImageView
+            android:id="@+id/shado"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.15"
+            android:background="@color/colorBlack"
+            android:scaleType="fitXY" />
+
+        <TextView
+            android:id="@+id/news_title_show"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="15dp"
+            android:textColor="@color/colorWhite"
+            android:textSize="22sp" />
+
+    </FrameLayout>
+
+    <!--循环卡片-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/first_cards"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></androidx.recyclerview.widget.RecyclerView>
 
 </LinearLayout>

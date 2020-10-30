@@ -1,11 +1,12 @@
 package com.example.insnew;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Html;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,7 @@ public class SecondActivity extends AppCompatActivity {
     ImageButton back_button;
     ImageView news_photo;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,7 @@ public class SecondActivity extends AppCompatActivity {
 
         news_title.setText(mydata.getString("title"));
         news_content.setText(mydata.getString("content"));
+        news_content.setText(Html.fromHtml(mydata.getString("content"),Html.FROM_HTML_MODE_LEGACY));
         news_src.setText(mydata.getString("src"));
         Glide.with(SecondActivity.this).load(mydata.getString("pic")).into(news_photo);
 

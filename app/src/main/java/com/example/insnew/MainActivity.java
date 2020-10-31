@@ -4,8 +4,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -26,20 +33,45 @@ public class MainActivity extends AppCompatActivity {
 
     RadioGroup radioGroup;
     RadioButton radioButton1,radioButton2,radioButton3,radioButton4;
+    FrameLayout splash;
+    private static final int STOPSPLASH = 0;
+    private static final long SPLASHTIME = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().getDecorView().setBackgroundResource(R.drawable.background_white);
         setContentView(R.layout.activity_main);
 
-        initRadioButton();
+        //管理启动页面
+//        SplashManager();
+//        splash = (FrameLayout)findViewById(R.id.splash);
+//        Message msg = new Message();
+//        msg.what = STOPSPLASH;
+//        splashManager.sendMessageDelayed(msg, SPLASHTIME);
+        //初始化按钮
+        InitRadioButton();
         //默认加载fragment
         AddFragment();
         //配置顶部导航栏
         TopbarController();
     }
 
-    private void initRadioButton() {
+@SuppressLint("HandlerLeak")
+private Handler splashManager = new Handler(){
+    public void handleMessage(Message msg) {
+        switch (msg.what) {
+            case STOPSPLASH:
+                SystemClock.sleep(4000);
+                splash.setVisibility(View.GONE);
+                break;
+        }
+        super.handleMessage(msg);
+    }
+
+};
+
+    private void InitRadioButton() {
         radioButton1 = (RadioButton)findViewById(R.id.button1);
         radioButton2 = (RadioButton)findViewById(R.id.button2);
         radioButton3 = (RadioButton)findViewById(R.id.button3);

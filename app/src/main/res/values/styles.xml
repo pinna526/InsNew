@@ -5,6 +5,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@drawable/splash_pic</item>
     </style>
 
+    <!--设置-全屏-->
+    <style name="PinnaTheme" parent="android:Theme.DeviceDefault.Light">
+        <item name="android:windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@drawable/splash_pic</item>
+    </style>
 </resources>

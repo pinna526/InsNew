@@ -25,6 +25,7 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().getDecorView().setBackgroundResource(R.drawable.background_white);
         setContentView(R.layout.activity_second);
         String news_data = getIntent().getStringExtra("news_data_title");
         JSONObject mydata = JSONObject.parseObject(news_data);

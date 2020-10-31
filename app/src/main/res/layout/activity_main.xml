@@ -7,7 +7,21 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
+
 <!--    导航栏-->
+<!--    <FrameLayout-->
+<!--        android:id="@+id/splash"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent">-->
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:scaleType="fitXY"-->
+<!--            android:src="@drawable/splash_pic" />-->
+<!--    </FrameLayout>-->
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
